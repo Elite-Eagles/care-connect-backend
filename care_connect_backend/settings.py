@@ -11,7 +11,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import firebase_admin
+import os
+from firebase_admin import credentials
 
+cred = credentials.Certificate('./firebase/flash_cart.json')
+firebase_admin.initialize_app(cred)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-97sg5dg%-@4&bxz$8iv*jn(!6dho5@ueslln_f+-(^p0h^+_-w'
+SECRET_KEY = 'django-insecure-mqr-w3&rhe(5q5yzc&9nm$z3s)-7%aiztc7ndx@(ti*k4*h$)3'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -28,6 +33,12 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://192.168.43.133:3000"
+]
+
+CORS_ALLOW_CREDENTIALS = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,11 +48,28 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'accounts',
+    'disasters',
+    'donations',
+    'help_requests',
+    'resource_allocations',
+    'resources',
+    'volunteers',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -116,7 +144,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
