@@ -14,7 +14,8 @@ from pathlib import Path
 import firebase_admin
 import os
 from firebase_admin import credentials
-
+import dj_database_url
+from google.oauth2 import service_account
 cred = credentials.Certificate('./firebase/flash_cart.json')
 firebase_admin.initialize_app(cred)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,7 +24,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+GS_BUCKET_NAME = "care_connect"
+GS_PROJECT_ID = "care-connect-469716"
 
+DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+
+GS_CREDENTIALS = None  # Optional if you use environment credentials
+
+# If you have a service account JSON:
+
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    os.path.join(BASE_DIR, "gcs-key.json")
+)
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-mqr-w3&rhe(5q5yzc&9nm$z3s)-7%aiztc7ndx@(ti*k4*h$)3'
 
@@ -51,6 +63,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+    "storages",
     'accounts',
     'disasters',
     'donations',
@@ -100,13 +113,12 @@ WSGI_APPLICATION = 'care_connect_backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.parse(
+        os.getenv("DATABASE_URL", "postgresql://postgres:Care@connect@db.araodqrebpnzxxyurlsr.supabase.co:5432/postgres")
+    )
 }
+
 
 
 # Password validation
